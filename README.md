@@ -15,3 +15,8 @@ staticClients:
   redirectURIs:
   - 'http://127.0.0.1:5555/callback'
 ```
+
+## Usage:
+```
+./dex-app --issuer https://dex.honestbee.com --client-id example-app --client-secret ZXhhbXBsZS1hcHAtc2VjcmV0
+```

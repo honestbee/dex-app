@@ -178,6 +178,7 @@ func cmd() *cobra.Command {
 
 			http.HandleFunc("/", a.handleIndex)
 			http.HandleFunc("/login", a.handleLogin)
+			http.HandleFunc("/download", a.handleDownload)
 			http.HandleFunc(u.Path, a.handleCallback)
 
 			switch listenURL.Scheme {
@@ -252,6 +253,22 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authCodeURL, http.StatusSeeOther)
 }
 
+func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
+	var refreshToken = r.FormValue("refresh_token")
+	var idToken = r.FormValue("id_token")
+	if refreshToken == "" {
+		http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
+		return
+	}
+
+	if idToken == "" {
+		http.Error(w, fmt.Sprintf("no id_token in request: %q", r.Form), http.StatusBadRequest)
+		return
+	}
+
+	renderKubeConfig(w, refreshToken, idToken)
+}
+
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	var (
 		err   error
@@ -284,11 +301,13 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
 			return
 		}
+
 		t := &oauth2.Token{
 			RefreshToken: refresh,
 			Expiry:       time.Now().Add(-time.Hour),
 		}
 		token, err = oauth2Config.TokenSource(ctx, t).Token()
+
 	default:
 		http.Error(w, fmt.Sprintf("method not implemented: %s", r.Method), http.StatusBadRequest)
 		return
