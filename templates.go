@@ -27,12 +27,15 @@ func renderIndex(w http.ResponseWriter) {
 	renderTemplate(w, indexTmpl, nil)
 }
 
-func renderToken(w http.ResponseWriter, redirectURL, idToken, refreshToken string, claims []byte) {
+func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redirectURL, idToken, refreshToken string, claims []byte) {
 	renderTemplate(w, tokenTmpl, tokenTmplData{
-		IDToken:      idToken,
-		RefreshToken: refreshToken,
-		RedirectURL:  redirectURL,
-		Claims:       string(claims),
+		CACert:          caCert,
+		ClientID:        clientID,
+		ClusterEndpoint: clusterEndpoint,
+		IDToken:         idToken,
+		RefreshToken:    refreshToken,
+		RedirectURL:     redirectURL,
+		Claims:          string(claims),
 	})
 }
 

@@ -28,6 +28,18 @@ const exampleAppState = "Honestbee FTW"
 // ClientID : global variable to take client_id and pass to /download
 var ClientID = ""
 
+// M : predefined map to help lookup values
+var M = map[string]map[string]string{
+	"kubernetes": map[string]string{
+		"CACert":          os.Getenv("STAGING_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
+	},
+	"kubernetes-svc": map[string]string{
+		"CACert":          os.Getenv("SVC_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
+	},
+}
+
 type app struct {
 	clientID     string
 	clientSecret string
@@ -261,20 +273,6 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
-	m := map[string]map[string]string{
-		"kubernetes": map[string]string{
-			"CACert":          os.Getenv("STAGING_CA_CERT"),
-			"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
-		},
-		"kubernetes-svc": map[string]string{
-			"CACert":          os.Getenv("SVC_CA_CERT"),
-			"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
-		},
-	}
-
-	var clientID = ClientID
-	var caCert = m[clientID]["CACert"]
-	var clusterEndpoint = m[clientID]["ClusterEndpoint"]
 	var refreshToken = r.FormValue("refresh_token")
 	var idToken = r.FormValue("id_token")
 	if refreshToken == "" {
@@ -287,7 +285,7 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderKubeConfig(w, clientID, caCert, clusterEndpoint, refreshToken, idToken)
+	renderKubeConfig(w, ClientID, M[ClientID]["CACert"], M[ClientID]["ClusterEndpoint"], refreshToken, idToken)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
@@ -356,5 +354,5 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	buff := new(bytes.Buffer)
 	json.Indent(buff, []byte(claims), "", "  ")
 
-	renderToken(w, a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes())
+	renderToken(w, a.redirectURI, ClientID, M[ClientID]["CACert"], M[ClientID]["ClusterEndpoint"], rawIDToken, token.RefreshToken, buff.Bytes())
 }
