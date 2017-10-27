@@ -9,7 +9,7 @@ pipeline:
     email: "devops@honestbee.com"
     secrets: [ docker_username, docker_password ]
     when:
-      branch: [ master, add_drone_build ]
+      branch: [ master ]
 
   notify:
     image: plugins/slack
