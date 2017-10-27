@@ -1,0 +1,17 @@
+<html>
+  <body>
+		<form action="/login" method="post">
+			<p> Cluster:
+				<select name="cross_client">
+					<option value="kubernetes">Staging-1a</option>
+					<option value="kubernetes-svc">Svc</option>
+					<option value="kubernetes-prod">Prod</option>
+				</select>
+			</p>
+			<p>
+				Request offline access:<input type="checkbox" name="offline_access" value="yes" checked>
+			</p>
+      <input type="submit" value="Login">
+    </form>
+  </body>
+</html>

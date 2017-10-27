@@ -2,15 +2,15 @@ apiVersion: v1
 clusters:
 - cluster:
     certificate-authority-data: REDACTED
-    server: https://api.ap-southeast-1a.staging.k8s.honestbee.com
-  name: ap-southeast-1a.staging.k8s.honestbee.com
+    server: https://api.{{ .ClusterEndpoint }}
+  name: {{ .ClusterEndpoint }}
 contexts:
 - context:
-    cluster: ap-southeast-1a.staging.k8s.honestbee.com
+    cluster: {{ .ClusterEndpoint }}
     namespace: default
     user: k8s-user
-  name: k8s-1.7-staging
-current-context: k8s-1.7-staging
+  name: k8s-1.7-{{ .ClusterEndpoint }}
+current-context: k8s-1.7-{{ .ClusterEndpoint }}
 kind: Config
 preferences: {}
 users:
@@ -18,8 +18,7 @@ users:
   user:
     auth-provider:
       config:
-        client-id: kubernetes
-        client-secret: AtMUIzMy00ODg0LTkwMDQtME
+        client-id: {{ .ClientID }}
         extra-scopes: groups
         id-token: {{ .IDToken }}
         idp-issuer-url: https://dex.honestbee.com

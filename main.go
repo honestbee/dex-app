@@ -23,7 +23,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const exampleAppState = "I wish to wash my irish wristwatch"
+const exampleAppState = "Honestbee FTW"
+
+// ClientID : global variable to take client_id and pass to /download
+var ClientID = ""
 
 type app struct {
 	clientID     string
@@ -193,8 +196,8 @@ func cmd() *cobra.Command {
 			}
 		},
 	}
-	c.Flags().StringVar(&a.clientID, "client-id", "example-app", "OAuth2 client ID of this application.")
-	c.Flags().StringVar(&a.clientSecret, "client-secret", "ZXhhbXBsZS1hcHAtc2VjcmV0", "OAuth2 client secret of this application.")
+	c.Flags().StringVar(&a.clientID, "client-id", "", "OAuth2 client ID of this application.")
+	c.Flags().StringVar(&a.clientSecret, "client-secret", "", "OAuth2 client secret of this application.")
 	c.Flags().StringVar(&a.redirectURI, "redirect-uri", "http://127.0.0.1:5555/callback", "Callback URL for OAuth2 responses.")
 	c.Flags().StringVar(&issuerURL, "issuer", "http://127.0.0.1:5556/dex", "URL of the OpenID Connect issuer.")
 	c.Flags().StringVar(&listen, "listen", "http://127.0.0.1:5555", "HTTP(S) address to listen at.")
@@ -230,7 +233,10 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var scopes []string
 	if extraScopes := r.FormValue("extra_scopes"); extraScopes != "" {
 		scopes = strings.Split(extraScopes, " ")
+	} else {
+		scopes = append(scopes, os.Getenv("SCOPES"))
 	}
+
 	var clients []string
 	if crossClients := r.FormValue("cross_client"); crossClients != "" {
 		clients = strings.Split(crossClients, " ")
@@ -250,10 +256,25 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 		authCodeURL = a.oauth2Config(scopes).AuthCodeURL(exampleAppState, oauth2.AccessTypeOffline)
 	}
 
+	ClientID = clients[0]
 	http.Redirect(w, r, authCodeURL, http.StatusSeeOther)
 }
 
 func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
+	m := map[string]map[string]string{
+		"kubernetes": map[string]string{
+			"CACert":          os.Getenv("STAGING_CA_CERT"),
+			"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
+		},
+		"kubernetes-svc": map[string]string{
+			"CACert":          os.Getenv("SVC_CA_CERT"),
+			"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
+		},
+	}
+
+	var clientID = ClientID
+	var caCert = m[clientID]["CACert"]
+	var clusterEndpoint = m[clientID]["ClusterEndpoint"]
 	var refreshToken = r.FormValue("refresh_token")
 	var idToken = r.FormValue("id_token")
 	if refreshToken == "" {
@@ -266,7 +287,7 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderKubeConfig(w, refreshToken, idToken)
+	renderKubeConfig(w, clientID, caCert, clusterEndpoint, refreshToken, idToken)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {

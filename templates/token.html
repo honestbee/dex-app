@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <style>
+/* make pre wrap */
+pre {
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+    </style>
+  </head>
+	<body>
+	<h5> Copy & paste the following commands: </h5>
+	<p> kubectl config set-credentials k8s-user \<br/>
+	--auth-provider=oidc \<br/>
+	--auth-provider-arg=idp-issuer-url=https://dex.honestbee.com  \<br/>
+	--auth-provider-arg=client-id={{ .ClientID }} \<br/>
+	{{ if .RefreshToken }}
+	--auth-provider-arg=refresh-token=<code>{{ .RefreshToken }}</code> \<br/>
+	{{ end }}
+	--auth-provider-arg=extra-scopes=groups \<br/>
+	--auth-provider-arg=id-token=<code>{{ .IDToken }}</code></p>
+
+	<p>kubectl config set-context k8s-1.7-{{ .ClusterEndpoint }} --namespace=default --user=k8s-user --cluster={{ .ClusterEndpoint }}</p>
+	<p>kubectl config use-context k8s-1.7-{{ .ClusterEndpoint }}</p>
+
+	{{ if .RefreshToken }}
+	<form action="{{ .RedirectURL }}" method="post">
+	  <input type="hidden" name="refresh_token" value="{{ .RefreshToken }}">
+	  <input type="submit" value="Redeem refresh token">
+    </form>
+	{{ end }}
+
+	<form action="/download" method="post">
+		<input type="hidden" name="refresh_token" value="{{ .RefreshToken }}">
+		<input type="hidden" name="id_token" value="{{ .IDToken }}">
+		<input type="submit" value="Download Kubeconfig">
+	</form>
+  </body>
+</html>
