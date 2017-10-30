@@ -196,6 +196,9 @@ func cmd() *cobra.Command {
 			http.HandleFunc("/download", a.handleDownload)
 			http.HandleFunc(u.Path, a.handleCallback)
 
+			fs := http.FileServer(http.Dir("assets"))
+			http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
 			switch listenURL.Scheme {
 			case "http":
 				log.Printf("listening on %s", listen)
