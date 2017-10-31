@@ -1,6 +1,6 @@
 # This is the CoreOS Dex Example app
 
-[![Docker Repository on Quay](https://quay.io/repository/vincentdesmet/dex-app/status "Docker Repository on Quay")](https://quay.io/repository/vincentdesmet/dex-app)
+[![Docker Repository on Quay](https://quay.io/repository/honestbee/dex-app/status "Docker Repository on Quay")](https://quay.io/repository/honestbee/dex-app)
 
 [Ref](https://github.com/coreos/dex/blob/master/Documentation/using-dex.md#writing-apps-that-use-dex)
 
@@ -27,3 +27,4 @@ staticClients:
 | `STAGING_CLUSTER_ENDPOINT` | staging cluster endpoint           | ``      |
 | `SVC_CA_CERT`              | CA certificate for svc cluster     | ``      |
 | `SVC_CLUSTER_ENDPOINT`     | svc cluster endpoint               | ``      |
+| `SCOPES`                   | Scopes to fetch from Id provider   | ``      |
