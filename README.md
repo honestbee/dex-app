@@ -1,6 +1,7 @@
 # This is the CoreOS Dex Example app
 
-[![Docker Repository on Quay](https://quay.io/repository/honestbee/dex-app/status "Docker Repository on Quay")](https://quay.io/repository/honestbee/dex-app)
+[![Build Status](https://drone.honestbee.com/api/badges/honestbee/dex-app/status.svg "Drone build status")](https://drone.honestbee.com/honestbee/dex-app)
+[![Docker Repository on Quay](https://img.shields.io/badge/container-ready-brightgreen.svg "Docker Repository on Quay")](https://quay.io/repository/honestbee/dex-app?tab=tags)
 
 [Ref](https://github.com/coreos/dex/blob/master/Documentation/using-dex.md#writing-apps-that-use-dex)
 
