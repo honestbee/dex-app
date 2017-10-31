@@ -1,7 +1,7 @@
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: REDACTED
+    certificate-authority-data: {{ .CACert }}
     server: https://api.{{ .ClusterEndpoint }}
   name: {{ .ClusterEndpoint }}
 contexts:
