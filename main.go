@@ -288,7 +288,7 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], refreshToken, idToken)
+	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], idToken, refreshToken)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
@@ -357,5 +357,5 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	buff := new(bytes.Buffer)
 	json.Indent(buff, []byte(claims), "", "  ")
 
-	renderToken(w, a.redirectURI, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], rawIDToken, token.RefreshToken, buff.Bytes())
+	renderToken(w, ClientClusters[ClientID]["CACert"], ClientID, ClientClusters[ClientID]["ClusterEndpoint"], a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes())
 }
