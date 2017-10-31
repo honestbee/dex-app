@@ -16,4 +16,6 @@ RUN set -ex \
 COPY entrypoint.sh /entrypoint.sh
 
 COPY --from=builder /dex-app /bin/dex-app
+COPY --from=builder /go/src/dex-app/templates/ /bin/templates/
+COPY --from=builder /go/src/dex-app/assets/ /bin/assets/
 ENTRYPOINT [ "/entrypoint.sh" ]
