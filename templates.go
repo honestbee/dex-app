@@ -1,72 +1,53 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 )
 
-var indexTmpl = template.Must(template.New("index.html").Parse(`<html>
-  <body>
-    <form action="/login" method="post">
-       <p>
-         Authenticate for:<input type="text" name="cross_client" placeholder="list of client-ids">
-       </p>
-       <p>
-         Extra scopes:<input type="text" name="extra_scopes" placeholder="list of scopes">
-       </p>
-	   <p>
-	     Request offline access:<input type="checkbox" name="offline_access" value="yes" checked>
-       </p>
-       <input type="submit" value="Login">
-    </form>
-  </body>
-</html>`))
+type tokenTmplData struct {
+	CACert          string
+	ClientID        string
+	ClusterEndpoint string
+	IDToken         string
+	RefreshToken    string
+	RedirectURL     string
+	Claims          string
+}
+
+var indexTmpl = template.Must(template.New("index.html").ParseFiles("templates/index.html"))
+
+var tokenTmpl = template.Must(template.New("token.html").ParseFiles("templates/token.html"))
+
+var kubeConfigTmpl = template.Must(template.New("kubeconfig.tpl").ParseFiles("templates/kubeconfig.tpl"))
 
 func renderIndex(w http.ResponseWriter) {
 	renderTemplate(w, indexTmpl, nil)
 }
 
-type tokenTmplData struct {
-	IDToken      string
-	RefreshToken string
-	RedirectURL  string
-	Claims       string
-}
-
-var tokenTmpl = template.Must(template.New("token.html").Parse(`<html>
-  <head>
-    <style>
-/* make pre wrap */
-pre {
- white-space: pre-wrap;       /* css-3 */
- white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
- white-space: -pre-wrap;      /* Opera 4-6 */
- white-space: -o-pre-wrap;    /* Opera 7 */
- word-wrap: break-word;       /* Internet Explorer 5.5+ */
-}
-    </style>
-  </head>
-  <body>
-    <p> Token: <pre><code>{{ .IDToken }}</code></pre></p>
-    <p> Claims: <pre><code>{{ .Claims }}</code></pre></p>
-	{{ if .RefreshToken }}
-    <p> Refresh Token: <pre><code>{{ .RefreshToken }}</code></pre></p>
-	<form action="{{ .RedirectURL }}" method="post">
-	  <input type="hidden" name="refresh_token" value="{{ .RefreshToken }}">
-	  <input type="submit" value="Redeem refresh token">
-    </form>
-	{{ end }}
-  </body>
-</html>
-`))
-
-func renderToken(w http.ResponseWriter, redirectURL, idToken, refreshToken string, claims []byte) {
+func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redirectURL, idToken, refreshToken string, claims []byte) {
 	renderTemplate(w, tokenTmpl, tokenTmplData{
-		IDToken:      idToken,
-		RefreshToken: refreshToken,
-		RedirectURL:  redirectURL,
-		Claims:       string(claims),
+		CACert:          caCert,
+		ClientID:        clientID,
+		ClusterEndpoint: clusterEndpoint,
+		IDToken:         idToken,
+		RefreshToken:    refreshToken,
+		RedirectURL:     redirectURL,
+		Claims:          string(claims),
+	})
+}
+
+func renderKubeConfig(w http.ResponseWriter, ClientID, caCert, clusterEndpoint, idToken, refreshToken string) {
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "kubeconfig"))
+	renderTemplate(w, kubeConfigTmpl, tokenTmplData{
+		CACert:          caCert,
+		ClientID:        ClientID,
+		ClusterEndpoint: clusterEndpoint,
+		IDToken:         idToken,
+		RefreshToken:    refreshToken,
 	})
 }
 

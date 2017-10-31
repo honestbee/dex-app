@@ -23,7 +23,22 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const exampleAppState = "I wish to wash my irish wristwatch"
+const exampleAppState = "Honestbee FTW"
+
+// ClientID : global variable to take client_id and pass to /download
+var ClientID = ""
+
+// ClientClusters : predefined map to help lookup values
+var ClientClusters = map[string]map[string]string{
+	"kubernetes": map[string]string{
+		"CACert":          os.Getenv("STAGING_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
+	},
+	"kubernetes-svc": map[string]string{
+		"CACert":          os.Getenv("SVC_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
+	},
+}
 
 type app struct {
 	clientID     string
@@ -178,7 +193,11 @@ func cmd() *cobra.Command {
 
 			http.HandleFunc("/", a.handleIndex)
 			http.HandleFunc("/login", a.handleLogin)
+			http.HandleFunc("/download", a.handleDownload)
 			http.HandleFunc(u.Path, a.handleCallback)
+
+			fs := http.FileServer(http.Dir("assets"))
+			http.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
 			switch listenURL.Scheme {
 			case "http":
@@ -229,7 +248,10 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var scopes []string
 	if extraScopes := r.FormValue("extra_scopes"); extraScopes != "" {
 		scopes = strings.Split(extraScopes, " ")
+	} else {
+		scopes = append(scopes, os.Getenv("SCOPES"))
 	}
+
 	var clients []string
 	if crossClients := r.FormValue("cross_client"); crossClients != "" {
 		clients = strings.Split(crossClients, " ")
@@ -249,7 +271,24 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 		authCodeURL = a.oauth2Config(scopes).AuthCodeURL(exampleAppState, oauth2.AccessTypeOffline)
 	}
 
+	ClientID = clients[0]
 	http.Redirect(w, r, authCodeURL, http.StatusSeeOther)
+}
+
+func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
+	var refreshToken = r.FormValue("refresh_token")
+	var idToken = r.FormValue("id_token")
+	if refreshToken == "" {
+		http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
+		return
+	}
+
+	if idToken == "" {
+		http.Error(w, fmt.Sprintf("no id_token in request: %q", r.Form), http.StatusBadRequest)
+		return
+	}
+
+	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], refreshToken, idToken)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
@@ -284,11 +323,13 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
 			return
 		}
+
 		t := &oauth2.Token{
 			RefreshToken: refresh,
 			Expiry:       time.Now().Add(-time.Hour),
 		}
 		token, err = oauth2Config.TokenSource(ctx, t).Token()
+
 	default:
 		http.Error(w, fmt.Sprintf("method not implemented: %s", r.Method), http.StatusBadRequest)
 		return
@@ -316,5 +357,5 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	buff := new(bytes.Buffer)
 	json.Indent(buff, []byte(claims), "", "  ")
 
-	renderToken(w, a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes())
+	renderToken(w, a.redirectURI, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], rawIDToken, token.RefreshToken, buff.Bytes())
 }
