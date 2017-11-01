@@ -34,6 +34,10 @@ var ClientClusters = map[string]map[string]string{
 		"CACert":          os.Getenv("STAGING_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
 	},
+	"kubernetes-staging-1b": map[string]string{
+		"CACert":          os.Getenv("STAGING_1B_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("STAGING_1B_CLUSTER_ENDPOINT"),
+	},
 	"kubernetes-svc": map[string]string{
 		"CACert":          os.Getenv("SVC_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
