@@ -30,15 +30,15 @@ var ClientID = ""
 
 // ClientClusters : predefined map to help lookup values
 var ClientClusters = map[string]map[string]string{
-	"kubernetes": map[string]string{
+	os.Getenv("STAGING_IDENTIFIER"): map[string]string{
 		"CACert":          os.Getenv("STAGING_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
 	},
-	"kubernetes-staging-1b": map[string]string{
+	os.Getenv("STAGING_1B_IDENTIFIER"): map[string]string{
 		"CACert":          os.Getenv("STAGING_1B_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("STAGING_1B_CLUSTER_ENDPOINT"),
 	},
-	"kubernetes-svc": map[string]string{
+	os.Getenv("STAGING_SVC_IDENTIFIER"): map[string]string{
 		"CACert":          os.Getenv("SVC_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
 	},
