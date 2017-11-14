@@ -23,9 +23,9 @@
               <form action="/login" method="post">
                 <p> Cluster:
                   <select name="cross_client">
-                    {{ range .ClusterList }}
+                    {{- range .ClusterList }}
                     <option value="{{ . }}">{{ . }}</option>
-                    {{ end }}
+                    {{- end }}
                   </select>
                 </p>
                 <p>
