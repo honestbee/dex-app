@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+type indexTmplData struct {
+	ClusterList []string
+}
+
 type tokenTmplData struct {
 	CACert          string
 	ClientID        string
@@ -23,8 +27,14 @@ var tokenTmpl = template.Must(template.New("token.html").ParseFiles("templates/t
 
 var kubeConfigTmpl = template.Must(template.New("kubeconfig.tpl").ParseFiles("templates/kubeconfig.tpl"))
 
-func renderIndex(w http.ResponseWriter) {
-	renderTemplate(w, indexTmpl, nil)
+func renderIndex(w http.ResponseWriter, ClientClusters map[string]map[string]string) {
+	clusterList := []string{}
+	for k := range ClientClusters {
+		clusterList = append(clusterList, k)
+	}
+	renderTemplate(w, indexTmpl, indexTmplData{
+		ClusterList: clusterList,
+	})
 }
 
 func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redirectURL, idToken, refreshToken string, claims []byte) {

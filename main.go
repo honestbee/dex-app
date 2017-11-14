@@ -235,7 +235,7 @@ func main() {
 }
 
 func (a *app) handleIndex(w http.ResponseWriter, r *http.Request) {
-	renderIndex(w)
+	renderIndex(w, ClientClusters)
 }
 
 func (a *app) oauth2Config(scopes []string) *oauth2.Config {
