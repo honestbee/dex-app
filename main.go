@@ -282,6 +282,8 @@ func (a *app) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 	var refreshToken = r.FormValue("refresh_token")
 	var idToken = r.FormValue("id_token")
+	var internal = r.FormValue("internal")
+	var clusterEndpoint string
 	if refreshToken == "" {
 		http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
 		return
@@ -292,7 +294,12 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], ClientClusters[ClientID]["ClusterEndpoint"], idToken, refreshToken)
+	if internal == "true" {
+		clusterEndpoint = "internal." + ClientClusters[ClientID]["ClusterEndpoint"]
+	} else {
+		clusterEndpoint = ClientClusters[ClientID]["ClusterEndpoint"]
+	}
+	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], clusterEndpoint, idToken, refreshToken)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
