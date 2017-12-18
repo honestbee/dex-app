@@ -33,7 +33,7 @@
 				{{ end }}
 				--auth-provider-arg=extra-scopes=groups \<br/>
 				--auth-provider-arg=id-token=<code>{{ .IDToken }}</code></p>
-				<p>kubectl config set-cluster --insecure-skip-tls-verify --server=https://api.{{ .ClusterEndpoint }} {{ .ClusterEndpoint }}</p>
+				<p>kubectl config set-cluster --server=https://api.{{ .ClusterEndpoint }} {{ .ClusterEndpoint }}</p>
 				<p>kubectl config set-context k8s-1.7-{{ .ClusterEndpoint }} --namespace=default --user=k8s-user --cluster={{ .ClusterEndpoint }}</p>
 				<p>kubectl config use-context k8s-1.7-{{ .ClusterEndpoint }}</p>
 			</div>
