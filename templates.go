@@ -19,6 +19,8 @@ type tokenTmplData struct {
 	RefreshToken    string
 	RedirectURL     string
 	Claims          string
+	NamespaceList   []string
+	Namespace       string
 }
 
 var indexTmpl = template.Must(template.New("index.html").ParseFiles("templates/index.html"))
@@ -37,7 +39,7 @@ func renderIndex(w http.ResponseWriter, ClientClusters map[string]map[string]str
 	})
 }
 
-func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redirectURL, idToken, refreshToken string, claims []byte) {
+func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redirectURL, idToken, refreshToken string, claims []byte, namespaceList []string) {
 	renderTemplate(w, tokenTmpl, tokenTmplData{
 		CACert:          caCert,
 		ClientID:        clientID,
@@ -46,10 +48,11 @@ func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redir
 		RefreshToken:    refreshToken,
 		RedirectURL:     redirectURL,
 		Claims:          string(claims),
+		NamespaceList:   namespaceList,
 	})
 }
 
-func renderKubeConfig(w http.ResponseWriter, ClientID, caCert, clusterEndpoint, idToken, refreshToken string) {
+func renderKubeConfig(w http.ResponseWriter, ClientID, caCert, clusterEndpoint, idToken, refreshToken string, namespace string) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "kubeconfig"))
 	renderTemplate(w, kubeConfigTmpl, tokenTmplData{
@@ -58,6 +61,7 @@ func renderKubeConfig(w http.ResponseWriter, ClientID, caCert, clusterEndpoint, 
 		ClusterEndpoint: clusterEndpoint,
 		IDToken:         idToken,
 		RefreshToken:    refreshToken,
+		Namespace:       namespace,
 	})
 }
 

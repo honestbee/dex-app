@@ -368,5 +368,5 @@ func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
 	buff := new(bytes.Buffer)
 	json.Indent(buff, []byte(claims), "", "  ")
 
-	renderToken(w, ClientClusters[ClientID]["CACert"], ClientID, ClientClusters[ClientID]["ClusterEndpoint"], a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes())
+	renderToken(w, ClientClusters[ClientID]["CACert"], ClientID, ClientClusters[ClientID]["ClusterEndpoint"], a.redirectURI, rawIDToken, token.RefreshToken, buff.Bytes(), ClientNamespaces)
 }
