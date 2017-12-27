@@ -44,6 +44,9 @@ var ClientClusters = map[string]map[string]string{
 	},
 }
 
+// ClientNamespaces : predefined slice of namespaces
+var ClientNamespaces = strings.Split(os.Getenv("NAMESPACES"), ",")
+
 type app struct {
 	clientID     string
 	clientSecret string
@@ -283,6 +286,7 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 	var refreshToken = r.FormValue("refresh_token")
 	var idToken = r.FormValue("id_token")
 	var internal = r.FormValue("internal")
+	var namespace = r.FormValue("namespace")
 	var clusterEndpoint string
 	if refreshToken == "" {
 		http.Error(w, fmt.Sprintf("no refresh_token in request: %q", r.Form), http.StatusBadRequest)
@@ -299,7 +303,7 @@ func (a *app) handleDownload(w http.ResponseWriter, r *http.Request) {
 	} else {
 		clusterEndpoint = ClientClusters[ClientID]["ClusterEndpoint"]
 	}
-	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], clusterEndpoint, idToken, refreshToken)
+	renderKubeConfig(w, ClientID, ClientClusters[ClientID]["CACert"], clusterEndpoint, idToken, refreshToken, namespace)
 }
 
 func (a *app) handleCallback(w http.ResponseWriter, r *http.Request) {
