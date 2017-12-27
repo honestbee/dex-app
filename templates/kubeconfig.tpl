@@ -7,7 +7,7 @@ clusters:
 contexts:
 - context:
     cluster: {{ .ClusterEndpoint }}
-    namespace: default
+    namespace: {{ .Namespace }}
     user: k8s-user
   name: k8s-1.7-{{ .ClusterEndpoint }}
 current-context: k8s-1.7-{{ .ClusterEndpoint }}
