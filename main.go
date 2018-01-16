@@ -43,8 +43,8 @@ var ClientClusters = map[string]map[string]string{
 		"ClusterEndpoint": os.Getenv("SVC_1A_CLUSTER_ENDPOINT"),
 	},
 	os.Getenv("PROD_1A_IDENTIFIER"): map[string]string{
-		"CACert":          os.Getenv("SVC_1A_CA_CERT"),
-		"ClusterEndpoint": os.Getenv("SVC_1A_CLUSTER_ENDPOINT"),
+		"CACert":          os.Getenv("PROD_1A_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("PROD_1A_CLUSTER_ENDPOINT"),
 	},
 	os.Getenv("PROD_1B_IDENTIFIER"): map[string]string{
 		"CACert":          os.Getenv("PROD_1B_CA_CERT"),
