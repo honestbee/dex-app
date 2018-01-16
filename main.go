@@ -30,17 +30,25 @@ var ClientID = ""
 
 // ClientClusters : predefined map to help lookup values
 var ClientClusters = map[string]map[string]string{
-	os.Getenv("STAGING_IDENTIFIER"): map[string]string{
-		"CACert":          os.Getenv("STAGING_CA_CERT"),
-		"ClusterEndpoint": os.Getenv("STAGING_CLUSTER_ENDPOINT"),
+	os.Getenv("STAGING_1A_IDENTIFIER"): map[string]string{
+		"CACert":          os.Getenv("STAGING_1A_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("STAGING_1A_CLUSTER_ENDPOINT"),
 	},
 	os.Getenv("STAGING_1B_IDENTIFIER"): map[string]string{
 		"CACert":          os.Getenv("STAGING_1B_CA_CERT"),
 		"ClusterEndpoint": os.Getenv("STAGING_1B_CLUSTER_ENDPOINT"),
 	},
-	os.Getenv("SVC_IDENTIFIER"): map[string]string{
-		"CACert":          os.Getenv("SVC_CA_CERT"),
-		"ClusterEndpoint": os.Getenv("SVC_CLUSTER_ENDPOINT"),
+	os.Getenv("SVC_1A_IDENTIFIER"): map[string]string{
+		"CACert":          os.Getenv("SVC_1A_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("SVC_1A_CLUSTER_ENDPOINT"),
+	},
+	os.Getenv("PROD_1A_IDENTIFIER"): map[string]string{
+		"CACert":          os.Getenv("SVC_1A_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("SVC_1A_CLUSTER_ENDPOINT"),
+	},
+	os.Getenv("PROD_1B_IDENTIFIER"): map[string]string{
+		"CACert":          os.Getenv("PROD_1B_CA_CERT"),
+		"ClusterEndpoint": os.Getenv("PROD_1B_CLUSTER_ENDPOINT"),
 	},
 }
 
