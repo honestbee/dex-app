@@ -8,13 +8,13 @@ contexts:
 - context:
     cluster: {{ .ClusterEndpoint }}
     namespace: {{ .Namespace }}
-    user: k8s-user
-  name: k8s-1.7-{{ .ClusterEndpoint }}
-current-context: k8s-1.7-{{ .ClusterEndpoint }}
+    user: {{ .ClientID }}-user
+  name: {{ .ClientID }}-dex
+current-context: {{ .ClientID }}
 kind: Config
 preferences: {}
 users:
-- name: k8s-user
+- name: {{ .ClientID }}-user
   user:
     auth-provider:
       config:
