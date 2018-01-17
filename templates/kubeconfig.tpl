@@ -10,7 +10,7 @@ contexts:
     namespace: {{ .Namespace }}
     user: {{ .ClientID }}-user
   name: {{ .ClientID }}-dex
-current-context: {{ .ClientID }}
+current-context: {{ .ClientID }}-dex
 kind: Config
 preferences: {}
 users:
