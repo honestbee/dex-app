@@ -54,7 +54,7 @@ func renderToken(w http.ResponseWriter, caCert, clientID, clusterEndpoint, redir
 
 func renderKubeConfig(w http.ResponseWriter, ClientID, caCert, clusterEndpoint, idToken, refreshToken string, namespace string) {
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "kubeconfig"))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s-%s-%s\"", "kubeconfig", ClientID, namespace))
 	renderTemplate(w, kubeConfigTmpl, tokenTmplData{
 		CACert:          caCert,
 		ClientID:        ClientID,
