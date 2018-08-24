@@ -37,7 +37,7 @@
         </form>
         {{ end }}
       </div>
-      <div class="mx-auto mb-5">
+      <!-- <div class="mx-auto mb-5">
         <form action="/download" method="post">
           <input type="hidden" name="refresh_token" value="{{ .RefreshToken }}">
           <input class="mr-4" type="hidden" name="id_token" value="{{ .IDToken }}"> Namespace:
@@ -49,7 +49,7 @@
           <input type="hidden" name="internal" value="false">
           <input class="mr-4" type="submit" value="Download Kubeconfig">
         </form>
-      </div>
+      </div> -->
       <div class="mx-auto mb-5"></div>
       <form action="/download" method="post">
         <input type="hidden" name="refresh_token" value="{{ .RefreshToken }}">
